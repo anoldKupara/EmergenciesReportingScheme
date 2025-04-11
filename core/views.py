@@ -22,6 +22,10 @@ def report_status(request, tracking_id):
     report = SchemeReport.objects.get(tracking_id=tracking_id)
     return render(request, 'core/report_status.html', {'report': report})
 
+def report_list(request):
+    reports = SchemeReport.objects.all().order_by('-created_at')  # Order by most recent first
+    return render(request, 'core/report_list.html', {'reports': reports})
+
 def request_counseling(request):
     if request.method == 'POST':
         message = request.POST.get('message')
