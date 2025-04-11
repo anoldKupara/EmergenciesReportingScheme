@@ -1,7 +1,27 @@
 from django.shortcuts import render, redirect
 from .forms import SchemeReportForm
 from .models import SchemeReport, CounselingRequest
+from .forms import SchemeReportForm, CounselingRequestForm  # Import the new form
 from django.core.mail import send_mail
+from django.core.paginator import Paginator
+
+def report_list(request):
+    status_filter = request.GET.get('status', '')
+    reports = SchemeReport.objects.all()
+    if status_filter:
+        reports = reports.filter(status=status_filter)
+    reports = reports.order_by('-created_at')
+    paginator = Paginator(reports, 10)
+    page_number = request.GET.get('page')
+    page_obj = paginator.get_page(page_number)
+    return render(request, 'core/report_list.html', {'page_obj': page_obj, 'status_filter': status_filter})
+
+def report_list(request):
+    reports = SchemeReport.objects.all().order_by('-created_at')
+    paginator = Paginator(reports, 10)  # Show 10 reports per page
+    page_number = request.GET.get('page')
+    page_obj = paginator.get_page(page_number)
+    return render(request, 'core/report_list.html', {'page_obj': page_obj})
 
 def home(request):
     return render(request, 'core/home.html')
@@ -28,10 +48,15 @@ def report_list(request):
 
 def request_counseling(request):
     if request.method == 'POST':
-        message = request.POST.get('message')
-        CounselingRequest.objects.create(user=request.user, message=message)
-        return render(request, 'core/counseling_success.html')
-    return render(request, 'core/counseling.html')
+        form = CounselingRequestForm(request.POST)
+        if form.is_valid():
+            counseling_request = form.save(commit=False)
+            counseling_request.user = request.user if request.user.is_authenticated else None
+            counseling_request.save()
+            return render(request, 'core/counseling_success.html')
+    else:
+        form = CounselingRequestForm()
+    return render(request, 'core/counseling.html', {'form': form})
 
 def escalate_report(request, tracking_id):
     report = SchemeReport.objects.get(tracking_id=tracking_id)
