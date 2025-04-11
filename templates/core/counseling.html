@@ -1,0 +1,12 @@
+<!DOCTYPE html>
+<html>
+<head><title>Sky - Counseling</title></head>
+<body>
+    <h1>Request Counseling</h1>
+    <form method="post">
+        {% csrf_token %}
+        <textarea name="message" rows="5" placeholder="Describe your situation"></textarea>
+        <button type="submit">Submit</button>
+    </form>
+</body>
+</html>

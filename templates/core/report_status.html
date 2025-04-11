@@ -1,0 +1,23 @@
+{% extends 'base.html' %}
+
+{% block title %}Report Status - Sky{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center fade-in">
+    <div class="col-md-8">
+        <h1 class="mb-4">Report Status: {{ report.tracking_id }}</h1>
+        <div class="card">
+            <div class="card-body">
+                <h5 class="card-title">Status: {{ report.status|title }}</h5>
+                <p class="card-text"><strong>Description:</strong> {{ report.description }}</p>
+                <p class="card-text"><strong>Location:</strong> {{ report.location }}</p>
+                <p class="card-text"><strong>Category:</strong> {{ report.category|title }}</p>
+                <p class="card-text"><strong>Submitted On:</strong> {{ report.created_at }}</p>
+                {% if report.evidence %}
+                <p class="card-text"><strong>Evidence:</strong> <a href="{{ report.evidence.url }}" target="_blank">View Evidence</a></p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
